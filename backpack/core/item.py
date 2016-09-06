@@ -18,6 +18,7 @@ class Item(object):
     @classmethod
     def random(cls):
         item = Item()
+        item.value = random.randint(0, 10)
         item.weight1 = random.randint(0, 10)
         item.weight2 = random.randint(0, 10)
         item.weight3 = random.randint(0, 10)
