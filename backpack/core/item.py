@@ -2,18 +2,19 @@ import random
 
 
 class Item(object):
-    def __init__(self):
+    def __init__(self, weight1=None, weight2=None, weight3=None, weight4=None, weight5=None, weight6=None,
+                 weight7=None, weight8=None, weight9=None, weight10=None):
         super(Item, self).__init__()
-        self.weight1 = None
-        self.weight2 = None
-        self.weight3 = None
-        self.weight4 = None
-        self.weight5 = None
-        self.weight6 = None
-        self.weight7 = None
-        self.weight8 = None
-        self.weight9 = None
-        self.weight10 = None
+        self.weight1 = weight1
+        self.weight2 = weight2
+        self.weight3 = weight3
+        self.weight4 = weight4
+        self.weight5 = weight5
+        self.weight6 = weight6
+        self.weight7 = weight7
+        self.weight8 = weight8
+        self.weight9 = weight9
+        self.weight10 = weight10
 
     @classmethod
     def random(cls):
