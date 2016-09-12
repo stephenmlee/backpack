@@ -42,7 +42,7 @@ class FastMaxItemValue(object):
 
     def test(self, backpack):
         item = backpack.added_item
-        value = self.getter_fn(item)
+        value = self.getter_fn(item) or 0
 
         # Get previous results or defaults
         previous_result = backpack.test_results.for_test(self.name)

@@ -34,7 +34,9 @@ class Backpack(object):
                     candidates.append(candidate_backpack)
                 sys.stdout.write('.')
             sys.stdout.write('\n')
-            backpack = random.choice(candidates)
+
+            candidates.sort(key=lambda x: x.test_results.lowest_bang_for_buck(), reverse=True)
+            backpack = candidates[0]
 
         self.items = backpack.items
         self.test_results = backpack.test_results
