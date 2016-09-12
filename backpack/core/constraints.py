@@ -104,3 +104,31 @@ class MaxValueResult(object):
             return MaxValueResult(self.passes, self.item_results.copy(), self.name)
 
 
+class FastMinTotalValue(object):
+    def __init__(self, getter_fn, min_value, name):
+        self.getter_fn = getter_fn
+        self.minimum = float(min_value)
+        self.name = name
+
+    def test(self, backpack):
+        item = backpack.added_item
+        value = self.getter_fn(item) or 0
+
+        # Get previous results or defaults
+        previous_result = backpack.test_results.for_test(self.name)
+        previous_total = previous_result.total if previous_result else 0
+
+        # Calculate new total and pass/fail incrementally from previous results
+        new_total = previous_total + value
+        passes = new_total >= self.minimum
+        progress_to_demand = value / self.minimum
+
+        return MinTotalValueResult(passes, new_total, progress_to_demand)
+
+
+class MinTotalValueResult(object):
+    def __init__(self, passes, total, progress_to_demand):
+        super(MinTotalValueResult, self).__init__()
+        self.passes = passes
+        self.total = total
+        self.progress_to_demand = progress_to_demand or 0

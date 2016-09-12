@@ -3,7 +3,7 @@ from unittest import TestCase
 from expecter import expect
 
 from core.backpack import Backpack
-from core.constraints import MaxItemValue, FastMaxItemValue, MaxValueResult
+from core.constraints import MaxItemValue, FastMaxItemValue, MaxValueResult, FastMinTotalValue
 from core.item import Item
 from core.test_results import AllTestResults
 
@@ -60,4 +60,26 @@ class TestFastMaxItemValue(TestCase):
         results = constraint.test(backpack)
         expect(results.bang_for_buck) == 10
 
+
+class TestFastMinTotalValue(TestCase):
+    def test_passes(self):
+        backpack = Backpack()
+        backpack.add_item(Item(weight1=10))
+        demand = FastMinTotalValue(lambda x: x.weight1, 10, "Test Rule")
+        results = demand.test(backpack)
+        expect(results.passes) == True
+
+    def test_fails(self):
+        backpack = Backpack()
+        backpack.add_item(Item(weight1=9))
+        demand = FastMinTotalValue(lambda x: x.weight1, 10, "Test Rule")
+        results = demand.test(backpack)
+        expect(results.passes) == False
+
+    def test_progress_to_demand(self):
+        backpack = Backpack()
+        backpack.add_item(Item(weight1=2))
+        demand = FastMinTotalValue(lambda x: x.weight1, 5, "Test Rule")
+        results = demand.test(backpack)
+        expect(results.progress_to_demand) == 0.4
 
