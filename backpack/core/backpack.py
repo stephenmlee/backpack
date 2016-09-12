@@ -17,10 +17,6 @@ class Backpack(object):
         self.items.append(item)
         self.added_item = item
 
-    def test(self):
-        for constraint in self.constraints:
-            self.test_results.update(constraint.test(self))
-    
     def pack(self, target_item_count, available_items):
         backpack = self
         for item_count in range(0, target_item_count):
@@ -35,14 +31,21 @@ class Backpack(object):
                 sys.stdout.write('.')
             sys.stdout.write('\n')
 
-            candidates.sort(key=lambda x: x.test_results.lowest_bang_for_buck(), reverse=True)
-            backpack = candidates[0]
+            backpack = self.apply_selection_heuristic(candidates)
 
         self.items = backpack.items
         self.test_results = backpack.test_results
 
+    def test(self):
+        for constraint in self.constraints:
+            self.test_results.update(constraint.test(self))
+
+    def apply_selection_heuristic(self, candidates):
+        candidates.sort(key=lambda x: x.test_results.bang_for_buck(), reverse=True)
+        return candidates[0]
+
     def copy(self):
         return Backpack(self.constraints, list(self.items), self.test_results.copy())
-                
+
             
 

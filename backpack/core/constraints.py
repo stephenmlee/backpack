@@ -37,7 +37,7 @@ class MaxItemValue(object):
 class FastMaxItemValue(object):
     def __init__(self, getter_fn, max_value, name):
         self.getter_fn = getter_fn
-        self.max_value = max_value
+        self.limit = max_value
         self.name = name
 
     def test(self, backpack):
@@ -51,7 +51,7 @@ class FastMaxItemValue(object):
 
         # Calculate new total and pass/fail incrementally from previous results
         new_item_total = previous_item_total + value
-        item_passed = new_item_total <= self.max_value
+        item_passed = new_item_total <= self.limit
         test_passed = prev_test_passed and item_passed
 
         fit_multiple, bang_for_buck = self.calculate_bang_for_buck(new_item_total, previous_item_total, item.value)
@@ -65,15 +65,13 @@ class FastMaxItemValue(object):
         new_result.bang_for_buck = bang_for_buck
         return new_result
 
-    def calculate_bang_for_buck(self, new_total, previous_total, value):
-        delta = new_total - previous_total
-        delta_pct = delta / float(self.max_value)
-        previous_result_pct = previous_total / float(self.max_value)
+    def calculate_bang_for_buck(self, new_result, previous_result, value):
+        delta = new_result - previous_result
         try:
-            fit_multiple = (1 - previous_result_pct) / delta_pct
+            fit_multiple = (self.limit - previous_result) / delta
         except ZeroDivisionError:
-            # Zero delta - no use of remaining limit for this item!
-            fit_multiple = 1000000
+            # Zero delta - no consumption of remaining capacity for this item! Give it a huge fit multiple as reward.
+            fit_multiple = 1000000000
         bang_for_buck = fit_multiple * value
         return fit_multiple, bang_for_buck
 

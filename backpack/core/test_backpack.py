@@ -40,8 +40,8 @@ class TestBackpack(TestCase):
 
     def test_constraint_heuristic_with_two_constraints(self):
         item1 = Item(weight1=100, value=1)
-        item2 = Item(weight2=5, value=4)
-        item3 = Item(weight1=5, value=5)
+        item2 = Item(weight1=5, value=5)
+        item3 = Item(weight2=5, value=4)
 
         constraints = [
             FastMaxItemValue(lambda x: x.weight1, 20, "Max Item Weight 1"),
@@ -51,4 +51,4 @@ class TestBackpack(TestCase):
         backpack = Backpack(constraints)
         backpack.pack(3, [item1, item2, item3])
 
-        expect(backpack.items) == [item3, item2, item3]
+        expect(backpack.items) == [item2, item3, item2]
