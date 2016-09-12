@@ -22,3 +22,5 @@ class TestBackpack(TestCase):
         backpack = Backpack(constraints)
         backpack.pack(500, items)
         expect(len(backpack.items)) == 500
+
+

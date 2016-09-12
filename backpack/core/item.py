@@ -3,7 +3,7 @@ import random
 
 class Item(object):
     def __init__(self, weight1=None, weight2=None, weight3=None, weight4=None, weight5=None, weight6=None,
-                 weight7=None, weight8=None, weight9=None, weight10=None):
+                 weight7=None, weight8=None, weight9=None, weight10=None, value=0):
         super(Item, self).__init__()
         self.weight1 = weight1
         self.weight2 = weight2
@@ -15,6 +15,7 @@ class Item(object):
         self.weight8 = weight8
         self.weight9 = weight9
         self.weight10 = weight10
+        self.value = value
 
     @classmethod
     def random(cls):

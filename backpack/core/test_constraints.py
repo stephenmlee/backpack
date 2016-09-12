@@ -44,3 +44,20 @@ class TestFastMaxItemValue(TestCase):
         new_max_value_results = constraint.test(backpack)
         expect(new_max_value_results.passes) == False
 
+    def test_fit_multiple(self):
+        item = Item(weight1=10)
+        backpack = Backpack()
+        backpack.add_item(item)
+        constraint = FastMaxItemValue(lambda x: x.weight1, 50, "Test Rule")
+        results = constraint.test(backpack)
+        expect(results.fit_multiple) == 5
+
+    def test_bang_for_buck(self):
+        item = Item(weight1=10, value=2)
+        backpack = Backpack()
+        backpack.add_item(item)
+        constraint = FastMaxItemValue(lambda x: x.weight1, 50, "Test Rule")
+        results = constraint.test(backpack)
+        expect(results.bang_for_buck) == 10
+
+
