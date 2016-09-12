@@ -19,7 +19,7 @@ class Backpack(object):
 
     def test(self):
         for constraint in self.constraints:
-            self.test_results.add(constraint.test(self))
+            self.test_results.update(constraint.test(self))
     
     def pack(self, target_item_count, available_items):
         backpack = self

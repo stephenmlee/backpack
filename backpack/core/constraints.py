@@ -20,7 +20,7 @@ class MaxItemValue(object):
             item_passed = item_total <= self.max_value
             passed = passed and item_passed
             results[item] = {'total': item_total, 'pass': item_passed}
-        return MaxValueResults(passed, results, self.name)
+        return MaxValueResult(passed, results, self.name)
 
     def _compute_totals(self, backpack):
         totals = defaultdict(float)
@@ -41,38 +41,50 @@ class FastMaxItemValue(object):
         self.name = name
 
     def test(self, backpack):
-        previous_results = backpack.test_results.for_test(self.name)
         item = backpack.added_item
-        prev_item_result = previous_results.get(item) if previous_results else None
+        value = self.getter_fn(item)
 
-        if prev_item_result:
-            new_total = prev_item_result['total'] + self.getter_fn(item)
-            item_passed = new_total <= self.max_value
-            test_passed = prev_item_result['pass'] and item_passed
+        # Get previous results or defaults
+        previous_result = backpack.test_results.for_test(self.name)
+        previous_item_total = previous_result.item_total(item) if previous_result else 0
+        prev_test_passed = previous_result.passes if previous_result else True
 
-            all_item_results = previous_results.item_results
-            all_item_results[item] = {'total': new_total, 'pass': item_passed}
-        else:
-            value = self.getter_fn(item)
-            item_passed = value <= self.max_value
-            test_passed = item_passed
-            all_item_results = previous_results.item_results if previous_results else {}
-            all_item_results[item] = {'total': value, 'pass': item_passed}
+        # Calculate new total and pass/fail incrementally from previous results
+        new_total = previous_item_total + value
+        item_passed = new_total <= self.max_value
+        test_passed = prev_test_passed and item_passed
 
-        return MaxValueResults(test_passed, all_item_results, self.name)
+        # Create new result object - care must be taken to replace the result dictionary (NOT just update the values)
+        # as the result dictionary may not have been cloned.
+        new_result = previous_result.copy() if previous_result else MaxValueResult(name=self.name)
+        new_result.passes = test_passed
+        new_result.update(item, {'total': new_total, 'pass': item_passed})
+        return new_result
 
 
-class MaxValueResults(object):
-        def __init__(self, passes, results, name):
-            super(MaxValueResults, self).__init__()
+class MaxValueResult(object):
+        def __init__(self, passes=None, results=None, name=None):
+            super(MaxValueResult, self).__init__()
             self.passes = passes
-            self.item_results = results
+            self.item_results = results or {}
             self.name = name
 
-        def get(self, item):
-            return self.item_results.get(item)
+        def update(self, item, result):
+            self.item_results[item] = result
+
+        def item_total(self, item):
+            try:
+                return self.item_results[item]['total']
+            except KeyError:
+                return 0
+
+        def item_passed(self, item):
+            try:
+                return self.item_results[item]['passed']
+            except KeyError:
+                return True
 
         def copy(self):
-            return MaxValueResults(self.passes, self.item_results.copy(), self.name)
+            return MaxValueResult(self.passes, self.item_results.copy(), self.name)
 
 

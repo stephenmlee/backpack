@@ -3,7 +3,7 @@ from unittest import TestCase
 from expecter import expect
 
 from core.backpack import Backpack
-from core.constraints import MaxItemValue, FastMaxItemValue, MaxValueResults
+from core.constraints import MaxItemValue, FastMaxItemValue, MaxValueResult
 from core.item import Item
 from core.test_results import AllTestResults
 
@@ -33,9 +33,9 @@ class TestFastMaxItemValue(TestCase):
 
     def test_fails(self):
         item = Item(weight1=25.1)
-        max_value_results = MaxValueResults(True, {item: {'pass': True, 'total': 25.1}}, "Test Rule")
+        max_value_results = MaxValueResult(True, {item: {'pass': True, 'total': 25.1}}, "Test Rule")
         results = AllTestResults()
-        results.add(max_value_results)
+        results.update(max_value_results)
 
         backpack = Backpack(test_results=results)
         backpack.add_item(item)

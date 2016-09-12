@@ -6,7 +6,7 @@ class AllTestResults(object):
     def passes(self):
         return reduce(lambda passes, result: passes and result.passes, self.results.itervalues(), True)
 
-    def add(self, test_result):
+    def update(self, test_result):
         self.results[test_result.name] = test_result
 
     def for_test(self, test_name):
