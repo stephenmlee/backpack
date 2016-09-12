@@ -37,7 +37,7 @@ class MaxItemValue(object):
 class FastMaxItemValue(object):
     def __init__(self, getter_fn, max_value, name):
         self.getter_fn = getter_fn
-        self.limit = max_value
+        self.limit = float(max_value)
         self.name = name
 
     def test(self, backpack):
@@ -60,7 +60,7 @@ class FastMaxItemValue(object):
         # as the result dictionary may not have been cloned.
         new_result = previous_result.copy() if previous_result else MaxValueResult(name=self.name)
         new_result.passes = test_passed
-        new_result.update(item, {'total': new_item_total, 'pass': item_passed})
+        new_result.update(item, {'total': new_item_total, 'total_pct': new_item_total / self.limit, 'pass': item_passed})
         new_result.fit_multiple = fit_multiple
         new_result.bang_for_buck = bang_for_buck
         return new_result
@@ -100,6 +100,16 @@ class MaxValueResult(object):
             except KeyError:
                 return True
 
+        @property
+        def total(self):
+            return reduce(lambda max, item_result: item_result['total'] if item_result['total'] > max else max,
+                          self.item_results.itervalues(), 0)
+
+        @property
+        def total_pct(self):
+            return reduce(lambda max, item_result: item_result['total_pct'] if item_result['total_pct'] > max else max,
+                          self.item_results.itervalues(), 0)
+
         def copy(self):
             return MaxValueResult(self.passes, self.item_results.copy(), self.name)
 
@@ -112,23 +122,31 @@ class FastMinTotalValue(object):
 
     def test(self, backpack):
         item = backpack.added_item
-        value = self.getter_fn(item) or 0
+        weight = self.getter_fn(item) or 0
 
         # Get previous results or defaults
         previous_result = backpack.test_results.for_test(self.name)
         previous_total = previous_result.total if previous_result else 0
 
         # Calculate new total and pass/fail incrementally from previous results
-        new_total = previous_total + value
+        new_total = previous_total + weight
         passes = new_total >= self.minimum
-        progress_to_demand = value / self.minimum
+        progress_to_demand = weight / self.minimum
+        bang_for_buck = 1000000000 * item.value
 
-        return MinTotalValueResult(passes, new_total, progress_to_demand)
+        return MinTotalValueResult(passes, new_total, progress_to_demand, self, bang_for_buck, new_total / self.minimum)
 
 
 class MinTotalValueResult(object):
-    def __init__(self, passes, total, progress_to_demand):
+    def __init__(self, passes, total, progress_to_demand, rule, bang_for_buck, total_pct):
         super(MinTotalValueResult, self).__init__()
         self.passes = passes
         self.total = total
+        self.total_pct = total_pct
         self.progress_to_demand = progress_to_demand or 0
+        self.name = rule.name
+        self.rule = rule
+        self.bang_for_buck = bang_for_buck
+
+    def copy(self):
+        return MinTotalValueResult(self.passes, self.total, self.progress_to_demand, self.rule, self.bang_for_buck, self.total_pct)

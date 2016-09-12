@@ -35,7 +35,7 @@ class TestFastMaxItemValue(TestCase):
         item = Item(weight1=25.1)
         max_value_results = MaxValueResult(True, {item: {'pass': True, 'total': 25.1}}, "Test Rule")
         results = AllTestResults()
-        results.update(max_value_results)
+        results.update_constraint(max_value_results)
 
         backpack = Backpack(test_results=results)
         backpack.add_item(item)
