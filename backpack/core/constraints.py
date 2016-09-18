@@ -60,7 +60,7 @@ class FastMaxItemValue(object):
         # as the result dictionary may not have been cloned.
         new_result = previous_result.copy() if previous_result else MaxValueResult(name=self.name)
         new_result.passes = test_passed
-        new_result.update(item, {'total': new_item_total, 'total_pct': new_item_total / self.limit, 'pass': item_passed})
+        new_result.update(item, {'total': new_item_total, 'result': new_item_total / self.limit, 'pass': item_passed})
         new_result.fit_multiple = fit_multiple
         new_result.bang_for_buck = bang_for_buck
         return new_result
@@ -106,8 +106,8 @@ class MaxValueResult(object):
                           self.item_results.itervalues(), 0)
 
         @property
-        def total_pct(self):
-            return reduce(lambda max, item_result: item_result['total_pct'] if item_result['total_pct'] > max else max,
+        def result(self):
+            return reduce(lambda max, item_result: item_result['result'] if item_result['result'] > max else max,
                           self.item_results.itervalues(), 0)
 
         def copy(self):
@@ -138,15 +138,15 @@ class FastMinTotalValue(object):
 
 
 class MinTotalValueResult(object):
-    def __init__(self, passes, total, progress_to_demand, rule, bang_for_buck, total_pct):
+    def __init__(self, passes, total, progress_to_demand, rule, bang_for_buck, result):
         super(MinTotalValueResult, self).__init__()
         self.passes = passes
         self.total = total
-        self.total_pct = total_pct
+        self.result = result
         self.progress_to_demand = progress_to_demand or 0
         self.name = rule.name
         self.rule = rule
         self.bang_for_buck = bang_for_buck
 
     def copy(self):
-        return MinTotalValueResult(self.passes, self.total, self.progress_to_demand, self.rule, self.bang_for_buck, self.total_pct)
+        return MinTotalValueResult(self.passes, self.total, self.progress_to_demand, self.rule, self.bang_for_buck, self.result)

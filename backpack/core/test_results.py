@@ -47,7 +47,7 @@ class AllTestResults(object):
     def __str__(self):
         formatted = ""
         for test_name, test_result in sorted(list(self.constraints.iteritems()) + list(self.demands.iteritems())):
-            formatted += ":%f" % test_result.total_pct
+            formatted += ":%f" % test_result.result
         return formatted
 
 

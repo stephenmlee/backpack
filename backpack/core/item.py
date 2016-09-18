@@ -20,16 +20,16 @@ class Item(object):
     @classmethod
     def random(cls):
         item = Item()
-        item.weight1 = random.randint(1, 10)
-        item.weight2 = random.randint(1, 10)
-        item.weight3 = random.randint(1, 10)
-        item.weight4 = random.randint(1, 100)
-        item.weight5 = random.randint(1, 100)
-        item.weight6 = random.randint(1, 10)
-        item.weight7 = random.randint(1, 10)
-        item.weight8 = random.randint(1, 10)
-        item.weight9 = random.randint(1, 10)
-        item.weight10 = random.random()
+        item.weight1 = random.uniform(1, 10)
+        item.weight2 = random.uniform(1, 10)
+        item.weight3 = random.uniform(1, 10)
+        item.weight4 = random.uniform(1, 100)
+        item.weight5 = random.uniform(1, 100)
+        item.weight6 = random.uniform(1, 10)
+        item.weight7 = random.uniform(1, 10)
+        item.weight8 = random.uniform(1, 10)
+        item.weight9 = random.uniform(1, 10)
+        item.weight10 = random.uniform(80, 110)
         item.value = 10-item.weight9
         return item
 

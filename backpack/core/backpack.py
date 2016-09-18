@@ -6,13 +6,14 @@ from core.test_results import AllTestResults
 
 
 class Backpack(object):
-    def __init__(self, constraints=None, items=None, test_results=None, demands=None):
+    def __init__(self, constraints=None, items=None, test_results=None, demands=None, target_item_count=None):
         super(Backpack, self).__init__()
         self.items = items or []
         self.constraints = constraints or []
         self.demands = demands or []
         self.test_results = test_results or AllTestResults()
         self.added_item = None
+        self.target_item_count = target_item_count
 
     def add_item(self, item):
         self.items.append(item)
@@ -20,6 +21,7 @@ class Backpack(object):
 
     def pack(self, target_item_count, available_items):
         backpack = self
+        backpack.target_item_count = target_item_count
         print self.headers()
         for item_count in range(0, target_item_count):
             candidates = []
@@ -69,7 +71,8 @@ class Backpack(object):
             self.constraints.append(demand_result.rule)
 
     def copy(self):
-        return Backpack(self.constraints, list(self.items), self.test_results.copy(), self.demands)
+        return Backpack(self.constraints, list(self.items), self.test_results.copy(), self.demands,
+                        self.target_item_count)
 
     def headers(self):
         formatted = "Backpack"

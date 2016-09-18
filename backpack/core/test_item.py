@@ -18,4 +18,4 @@ class TestItem(TestCase):
         0 <= expect(items[0].weight7) <= 1000
         0 <= expect(items[0].weight8) <= 1000
         0 <= expect(items[0].weight9) <= 1000
-        0 <= expect(items[0].weight10) <= 1
+        80 <= expect(items[0].weight10) <= 110

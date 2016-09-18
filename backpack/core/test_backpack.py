@@ -5,6 +5,7 @@ from expecter import expect
 from core.backpack import Backpack
 from core.constraints import FastMaxItemValue, FastMinTotalValue
 from core.item import create_random_items, Item
+from core.test_constraints import WeightedAverageTarget
 
 
 class TestBackpack(TestCase):
@@ -18,6 +19,7 @@ class TestBackpack(TestCase):
             FastMaxItemValue(lambda x: x.weight3, 20, "Max Item Weight 3"),
             FastMaxItemValue(lambda x: x.weight4, 200, "Max Item Weight 4"),
             FastMaxItemValue(lambda x: x.weight5, 500, "Max Item Weight 5"),
+            WeightedAverageTarget("Weighted Average Target 10", lambda x: x.weight10, 98.25, 20, 0.1)
         ]
 
         demands = [
@@ -37,6 +39,7 @@ class TestBackpack(TestCase):
         expect(backpack.test_results.for_test("Max Item Weight 3").total) <= 20
         expect(backpack.test_results.for_test("Max Item Weight 4").total) <= 200
         expect(backpack.test_results.for_test("Max Item Weight 5").total) <= 500
+        98.15 <= expect(backpack.test_results.for_test("Weighted Average Target 10").result) <= 98.35
 
         expect(backpack.test_results.for_test("Min Total Weight 6").total) >= 500
         expect(backpack.test_results.for_test("Min Total Weight 7").total) >= 1000
