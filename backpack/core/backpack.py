@@ -35,7 +35,7 @@ class Backpack(object):
             backpack = self.apply_selection_heuristic(candidates)
             backpack.turn_passing_demands_into_constraints()
 
-            print "%s%s" % (item_count, backpack.test_results)
+            print "%s%s:%s" % (item_count, backpack.test_results, backpack.added_item.weight10)
 
         self.items = backpack.items
         self.test_results = backpack.test_results
@@ -78,6 +78,7 @@ class Backpack(object):
         formatted = "Backpack"
         for rule in sorted(self.constraints + self.demands, key=lambda x: x.name):
             formatted += ":%s" % rule.name
+        formatted += ":%s" % "Weight 10"
         return formatted
 
             

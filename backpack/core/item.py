@@ -29,7 +29,7 @@ class Item(object):
         item.weight7 = random.uniform(1, 10)
         item.weight8 = random.uniform(1, 10)
         item.weight9 = random.uniform(1, 10)
-        item.weight10 = random.uniform(80, 110)
+        item.weight10 = random.uniform(78.25, 118.25)
         item.value = 10-item.weight9
         return item
 

@@ -2,6 +2,8 @@ from collections import defaultdict
 
 
 # A single type of item can take up to the specified value in the given weight
+
+
 class MaxItemValue(object):
     name = "Max Item Value"
 
@@ -150,3 +152,53 @@ class MinTotalValueResult(object):
 
     def copy(self):
         return MinTotalValueResult(self.passes, self.total, self.progress_to_demand, self.rule, self.bang_for_buck, self.result)
+
+
+class WeightedAverageTarget(object):
+    def __init__(self, name, getter_fn, target, start_range, end_range):
+        super(WeightedAverageTarget, self).__init__()
+        self.name = name
+        self.getter_fn = getter_fn
+        self.target = target
+        self.start_upper_bound = target + (start_range / 2.0)
+        self.start_lower_bound = target - (start_range / 2.0)
+        self.end_upper_bound = target + (end_range / 2.0)
+        self.end_lower_bound = target - (end_range / 2.0)
+
+    def test(self, backpack):
+        previous_results = backpack.test_results.for_test(self.name)
+        prev_total_weight = previous_results.total_weight if previous_results else 0
+        prev_total_weight_x_value = previous_results.total_weight_x_value if previous_results else 0
+
+        # Weight is always one as we only add 1 item each time
+        weight = 1
+        total_weight = prev_total_weight + weight
+        total_weight_x_value = prev_total_weight_x_value + (weight * self.getter_fn(backpack.added_item))
+        weighted_average = total_weight_x_value / total_weight
+
+        target_count = backpack.target_item_count
+        current_count = len(backpack.items) + 1
+        passes = self.lower_bound(target_count, current_count) < weighted_average < self.upper_bound(target_count, current_count)
+
+        return WeightedAverageTargetResults(self.name, passes, weighted_average, total_weight_x_value, total_weight)
+
+    def lower_bound(self, target_item_count, current_item_count):
+        return ((self.end_lower_bound - self.start_lower_bound) / target_item_count) * current_item_count  + self.start_lower_bound
+
+    def upper_bound(self, target_item_count, current_item_count):
+        return ((self.end_upper_bound - self.start_upper_bound) / target_item_count) * current_item_count + self.start_upper_bound
+
+
+class WeightedAverageTargetResults(object):
+    def __init__(self, name, passes, weighted_average, total_weight_x_value, total_weight):
+        super(WeightedAverageTargetResults, self).__init__()
+        self.passes = passes
+        self.total_weight_x_value = total_weight_x_value
+        self.total_weight = total_weight
+        self.result = weighted_average
+        self.name = name
+        self.bang_for_buck = None
+
+    def copy(self):
+        return WeightedAverageTargetResults(self.name, self.passes, self.result, self.total_weight_x_value,
+                                            self.total_weight)
